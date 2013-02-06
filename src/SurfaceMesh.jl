@@ -37,7 +37,8 @@ function read2dm(file)
         x_split = map(split, split(x, " -"))
         nss = Array(NodeString, 0)
         for i = 1:(length(x_split)-1)
-            push!(nss, NodeString(x_split[i+1][1], int(x_split[i])))
+            nds = [int(x_split[i]), int(shift!(x_split[i+1]))]
+            push!(nss, NodeString(shift!(x_split[i+1]), nds))
         end
         nss
         # ^ Returns an array of NodeString
