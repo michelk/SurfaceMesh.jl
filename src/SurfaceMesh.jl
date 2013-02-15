@@ -2,8 +2,9 @@ module SurfaceMesh
 using Base
 export
   read2dm
+  area
  
-# Index Element Mesh Represenation
+# Index Face Mesh Represenation
 #=================================
 type Vertex
     x :: FloatingPoint
@@ -11,29 +12,29 @@ type Vertex
     z :: FloatingPoint
 end
 
-type IndexElement
+type IndexedFace
     nds :: Array{Int}
     mat :: Array{Int}
 end
 
-type IndexElementMesh
+type IndexedFaceMesh
     id   :: String
-    ele  :: Dict{Int, IndexElement}
+    ele  :: Dict{Int, IndexedFace}
     nd   :: Dict{Int,Vertex}
     ns   :: Dict{Int,Array{Int}}
     mat  :: Dict{Int, String}
 end
 
-# Element Mesh Representation
+# Face Mesh Representation
 #============================
 
-type Element
-    n   :: Int
+type Face
     nds :: Array{Vertex}
-    mat :: Array{String}
+    mat :: Array{Int}
 end
+
 # | Read a .2dm (SMS Aquaveo) mesh
-function read2dm(file)
+function read2dm(file::String)
     #file = "../test/ex.2dm"
     parseNode(w::Array{String}) = (int(w[2]), float(w[3]), float(w[4]), float(w[5]))
     parseTriangle(w::Array{String}) = (int(w[2]), int(w[2:4]), [int(w[5])])
@@ -52,7 +53,7 @@ function read2dm(file)
     end
     con = open(file, "r")
     nd = Dict{Int,Vertex}() 
-    ele = Dict{Int, IndexElement}()
+    ele = Dict{Int, IndexedFace}()
     nsstr = ""
     mat = Dict{Int, String}()
     #line = readline(con)
@@ -64,10 +65,10 @@ function read2dm(file)
             nd[i] = Vertex(x,y,z)
         elseif w[1] == "E3T"
             (i,n,m) = parseTriangle(w)
-            ele[i] = IndexElement(n,m)
+            ele[i] = IndexedFace(n,m)
         elseif w[1] == "E4Q"
             (i,n,m) = parseQuad(w)
-            ele[i] = IndexElement(n,m)
+            ele[i] = IndexedFace(n,m)
         elseif w[1] == "NS"
             nsstr = join([nsstr, parseNsLine(line)], " ")
         elseif w[1] == "MAT"
@@ -78,6 +79,17 @@ function read2dm(file)
     end
     close(con)
     nss = parseNss(nsstr)
-    IndexElementMesh(replace(basename(file), ".2dm", ""), ele, nd, nss, mat)
+    IndexedFaceMesh(replace(basename(file), ".2dm", ""), ele, nd, nss, mat)
 end
+function iEleToEle(ie::IndexedFace, ndM::Dict{Int,Vertex})
+    Face(map(x->ndM[x], ie.nds), ie.mat)
+end
+function area(m::IndexedFaceMesh)
+    ele = map(x -> iEleToEle(x,m.nd), values(m.ele))
+    map(area, ele)
+end
+function area(e::Face)
+    error("Undefined")
+end
+    
 end                                     # module SurfaceMesh
