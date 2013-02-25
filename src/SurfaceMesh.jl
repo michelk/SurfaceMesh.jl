@@ -3,7 +3,7 @@ using Base
 export
   read2dm
  
-# Index Element Mesh Represenation
+# Indexed Face Mesh Represenation
 #=================================
 type Vertex
     x :: FloatingPoint
@@ -11,23 +11,23 @@ type Vertex
     z :: FloatingPoint
 end
 
-type IndexElement
+type IndexedFace
     nds :: Array{Int}
     mat :: Array{Int}
 end
 
-type IndexElementMesh
+type IndexedFaceMesh
     id   :: String
-    ele  :: Dict{Int, IndexElement}
+    ele  :: Dict{Int, IndexedFace}
     nd   :: Dict{Int,Vertex}
     ns   :: Dict{Int,Array{Int}}
     mat  :: Dict{Int, String}
 end
 
-# Element Mesh Representation
+# Face Mesh Representation
 #============================
 
-type Element
+type Face
     n   :: Int
     nds :: Array{Vertex}
     mat :: Array{String}
@@ -52,7 +52,7 @@ function read2dm(file)
     end
     con = open(file, "r")
     nd = Dict{Int,Vertex}() 
-    ele = Dict{Int, IndexElement}()
+    ele = Dict{Int, IndexedFace}()
     nsstr = ""
     mat = Dict{Int, String}()
     #line = readline(con)
@@ -64,10 +64,10 @@ function read2dm(file)
             nd[i] = Vertex(x,y,z)
         elseif w[1] == "E3T"
             (i,n,m) = parseTriangle(w)
-            ele[i] = IndexElement(n,m)
+            ele[i] = IndexedFace(n,m)
         elseif w[1] == "E4Q"
             (i,n,m) = parseQuad(w)
-            ele[i] = IndexElement(n,m)
+            ele[i] = IndexedFace(n,m)
         elseif w[1] == "NS"
             nsstr = join([nsstr, parseNsLine(line)], " ")
         elseif w[1] == "MAT"
@@ -78,6 +78,6 @@ function read2dm(file)
     end
     close(con)
     nss = parseNss(nsstr)
-    IndexElementMesh(replace(basename(file), ".2dm", ""), ele, nd, nss, mat)
+    IndexedFaceMesh(replace(basename(file), ".2dm", ""), ele, nd, nss, mat)
 end
 end                                     # module SurfaceMesh
