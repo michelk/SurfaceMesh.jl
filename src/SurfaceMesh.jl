@@ -1,10 +1,15 @@
 module SurfaceMesh
 using Base
-export
-  read2dm
-  area
+
+import Base.show
+
+#Types
+export Vertex, IndexedFace, IndexedFaceMesh, Face, show
+
+# Functions
+export read2dm, area
  
-# Index Face Mesh Represenation
+#s Index Face Mesh Represenation
 #=================================
 type Vertex
     x :: FloatingPoint
@@ -31,6 +36,17 @@ end
 type Face
     nds :: Array{Vertex}
     mat :: Array{Int}
+end
+
+function show(io::IO, x::IndexedFaceMesh)
+    println("Elements")
+    show(show(values(x.ele)))
+    println("Vertices")
+    show(show(values(x.nd)))
+    println("Node-Strings")
+    dump(x.ns)
+    println("Materials")
+    dump(x.mat)
 end
 
 # | Read a .2dm (SMS Aquaveo) mesh
@@ -89,7 +105,11 @@ function area(m::IndexedFaceMesh)
     map(area, ele)
 end
 function area(e::Face)
-    error("Undefined")
+    push!(e.nds, e.nds[1])
+    a = Array(FloatingPoint,0)
+    for i = 1:(length(e.nds)-1)
+        push!(a, e.nds[i].x * e.nds[i+1].y - e.nds[i+1].x *e.nds[i].y)
+    end
+    sum(a)
 end
-    
 end                                     # module SurfaceMesh
