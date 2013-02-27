@@ -16,6 +16,7 @@ type IndexedFaceMesh
     ele  :: Dict{Int, IndexedFace}
     nd   :: Dict{Int,Vertex}
     ns   :: Dict{Int,Array{Int}}
+    mat  :: Dict{Int,String}
 end
 
 # Face Mesh Representation
