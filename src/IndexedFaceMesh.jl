@@ -60,3 +60,20 @@ function area(m::IndexedFaceMesh)
     ele = map(x -> iEleToEle(x,m.nd), values(m.ele))
     map(area, ele)
 end
+# | Merge two IndexedFaceMeshes by looking for identical boundary-edges
+function merge(x::IndexedFaceMesh,y::IndexedFaceMesh)
+    # Transform mesh into half-edge-representation
+    # Look for identical edges in both meshes
+    # Adjust numbering of mesh y
+    # Merge the two meshes
+    error("Undefined")
+    # ^ Returns a merged mesh
+end
+# | Calculate the difference in elevation between two meshes
+function diff(x::IndexedFaceMesh,y::IndexedFaceMesh)
+    # Calculate distance for each vertex from x to y
+    # Calculate distance for each vertex from y to x
+    # Create a new mesh based on distances
+    error("Undefined")
+    # ^ Returns a difference mesh
+end
