@@ -22,8 +22,8 @@ function read2dm(file::String)
         nss         # ^ Returns an array of NodeString
     end
     parseNode(w::Array{String}) = (int(w[2]), float(w[3]), float(w[4]), float(w[5]))
-    parseTriangle(w::Array{String}) = (int(w[2]), int(w[2:4]), [int(w[5])])
-    parseQuad(w::Array{String}) = (int(w[2]), int(w[2:5]), [int(w[6])])
+    parseTriangle(w::Array{String}) = (int(w[2]), int(w[3:5]), [int(w[6])])
+    parseQuad(w::Array{String}) = (int(w[2]), int(w[3:6]), [int(w[7])])
     parseNsLine(l::String) = replace(l, r"^NS\s*", "")
     con = open(file, "r")
     nd = Dict{Int,Vertex}() 
