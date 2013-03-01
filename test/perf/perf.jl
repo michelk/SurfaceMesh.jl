@@ -5,5 +5,6 @@ end
 require("SurfaceMesh")
 using SurfaceMesh
 m = read2dm(ARGS[1])
-a = area(m)
+a = sum(area(m))
+print("Julia Area $a")
 exit()

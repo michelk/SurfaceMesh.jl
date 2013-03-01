@@ -1,0 +1,4 @@
+*.hi
+*.o
+perf-hs
+perf.dat

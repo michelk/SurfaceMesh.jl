@@ -15,9 +15,13 @@ function read2dm(file::String)
     function parseNss(x::String)
         x_split = map(split, split(x, " -"))
         nss = Dict{Int,Array{Int}}()
-        for i = 1:(length(x_split)-1)
-            nds = [int(x_split[i]), int(shift!(x_split[i+1]))]
-            nss[int(shift!(x_split[i+1]))] = nds
+        if length(x_split) == 2
+            nss[1] = [int(x_split[1][2:length(x_split[1])]), int(x_split[2])]
+        else
+            for i = 1:(length(x_split)-1)
+                nds = [int(x_split[i]), int(shift!(x_split[i+1]))]
+                nss[int(shift!(x_split[i+1]))] = nds
+            end
         end
         nss         # ^ Returns an array of NodeString
     end

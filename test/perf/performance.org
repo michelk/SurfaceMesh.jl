@@ -1,0 +1,40 @@
+* Header						   :noexport:ARCHIVE:
+#+TITLE: Performance of Mesh-Libraries
+#+AUTHOR: Michel Kuhlmann
+#+BEGIN_SRC emacs-lisp :exports none
+  (org-babel-do-load-languages
+  'org-babel-load-languages
+  '((sh . t)
+     (R . t)))
+#+END_SRC
+
+* Introduction
+I compare three implementations of a Surface-Mesh-Library in 
+
+- [[https://www.github.com/michelk/SurfaceMesh.R][R]]
+- [[https://www.github.com/michelk/SurfaceMesh.jl][Julia]]
+- [[https://www.github.com/michelk/devsurf][Haskell]]
+
+* Timings
+  On my rather old lapop I get those timings on element-area
+  calculation for an example-mesh from the [[http://www.basement.ethz.ch/services/Tutorials/v2.2/flaz_stationary.zip][Basement-website]].
+
+  #+BEGIN_SRC sh :exports none :results silent :eval no 
+    MSH="../flaz.2dm"
+    DAT="perf.dat"
+    ghc --make perf-hs.hs
+    rm $DAT
+    time -a -o $DAT -f "R Area %E" ./perf.R  $MSH  
+    time -a -o $DAT -f "Julia Area %E" ./perf.jl $MSH  
+    time -a -o $DAT -f "Haskell Area %E" ./perf-hs < $MSH  
+  #+END_SRC
+
+  #+BEGIN_SRC sh :exports results
+    cat perf.dat
+  #+END_SRC
+
+  #+RESULTS:
+  | R       | Area | 1:00.27 |
+  | Julia   | Area | 0:04.50 |
+  | Haskell | Area | 0:00.50 |
+
