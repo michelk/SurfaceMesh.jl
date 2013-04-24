@@ -1,19 +1,16 @@
+import Base.show
 function show(io::IO, x::IndexedFaceSet)
-    println("Elements")
-    show(show(values(x.ele)))
-    println("Vertices")
-    show(show(values(x.nd)))
-    println("Node-Strings")
-    dump(x.ns)
-    println("Materials")
-    dump(x.mat)
+    println("")
 end
+export show
 
 function area(m::IndexedFaceSet)
     iEleToEle(ie::IndexedFace, ndM::Dict{Int,Vertex}) = Face(map(x->ndM[x], ie.nds), ie.mat)
     ele = map(x -> iEleToEle(x,m.nd), values(m.ele))
     map(area, ele)
 end
+export area
+
 # | Merge two IndexedFaceSetes by looking for identical boundary-edges
 function merge(x::IndexedFaceSet,y::IndexedFaceSet)
     # Transform mesh into half-edge-representation
@@ -22,14 +19,6 @@ function merge(x::IndexedFaceSet,y::IndexedFaceSet)
     # Merge the two meshes
     error("Undefined")
     # ^ Returns a merged mesh
-end
-# | Calculate the difference in elevation between two meshes
-function diff(x::IndexedFaceSet,y::IndexedFaceSet)
-    # Calculate distance for each vertex from x to y
-    # Calculate distance for each vertex from y to x
-    # Create a new mesh based on distances
-    error("Undefined")
-    # ^ Returns a difference mesh
 end
 
 # | Difference between two meshes as new mesh ; currently they could

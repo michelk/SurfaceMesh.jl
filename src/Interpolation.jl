@@ -1,22 +1,25 @@
 Face(ifc::IndexedFace, nds :: VertexMap) =  Face(nds[ifc.v1], nds[ifc.v2], nds[ifc.v3])
 
-# | interpolate z-value of the vertices from one  'Mesh' to another 'Mesh'
-function interpolateZ(m::IndexedFaceSet,from::IndexedFaceSet) # :: IndexedFaceSet
-    IndexedFaceSet(interpolateZ(m.vs, from),m.fcs)
+# | Interpolate z-value of the vertices from one  'Mesh' to another 'Mesh'
+function interpolateZ(m::IndexedFaceSet,from::IndexedFaceSet) #:: IndexedFaceSet 
+    
+    nds = (Index => Vertex)[i => interpolateZ(m.vs[i], from) for i = keys(m.vs)]
+    IndexedFaceSet(nds,m.fcs)
+end
+
+# | Interpolate a single vertex from 'IndexedFaceSet'
+function interpolateZ(v::Vertex, m :: IndexedFaceSet) # :: Vertex
+        fc = filter(x -> contains(x,v), [Face(f,m.vs) for f = values(m.fcs)])
+        if length(fc) == 0
+            v
+        else    
+            interpolateZ(v,fc[1])
+        end 
 end
 
 # | Interpolate elevation of a set of xy-vertices from an 'IndexedFaceSet'
-function interpolateZ(vs::Vector{Vertex}, m :: IndexedFaceSet) # :: Vector{Vertex}
-    vsn = Vertex[]
-    for v = vs
-        fc = filter(x -> contains(x,v), [Face(f,m.vs) for f = values(m.fcs)])
-        if length(fc) == 0
-            push!(vsn,v)
-        else    
-            push!(vsn,interpolateZ(v,fc[1]))
-        end 
-    end
-    vsn
+function interpolateZ(vs::Vector{Vertex}, m :: IndexedFaceSet) # ::Vector{Vertex}
+    map(v -> interpolateZ(v,m), vs)
 end
 
 # | Interpolate the elevation of 'Vertex' from a 'IndexedFace'
@@ -43,7 +46,7 @@ end
 # | Checks if 'Vertex's xy-position lies inside a Face
 #   Code from http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
 import Base.contains
-function contains(f::Face, v::Vertex) #  :: Bool
+function contains(f::Face, v::Vertex) # :: Bool
     b1 = sign(v, f.v1, f.v2) < 0
     b2 = sign(v, f.v2, f.v3) < 0
     b3 = sign(v, f.v3, f.v1) < 0

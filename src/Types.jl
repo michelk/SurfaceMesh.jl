@@ -1,16 +1,10 @@
 #s Index Face Represenation
 #==========================
-# Takes so long for loading; currently disabled
-#using ImmutableArrays
-#typealias Vertex         Vector3{Float64}
-immutable Vertex
-  e1 :: Vertex
-  e2 :: Vertex
-  e3 :: Vertex
-end
+using ImmutableArrays
+typealias Vertex    Vector3{Float64}
 
-typealias Index          Int
-typealias VertexMap      Dict{Index, Vertex}
+typealias Index     Int
+typealias VertexMap Dict{Index, Vertex}
 
 immutable IndexedFace
     v1 :: Index
@@ -44,13 +38,7 @@ typealias FaceSet Array{Face}
 # Planes (copied from the Meshes module)
 # --------------------------------------
 
-#typealias Plane Vector4{Float64}
-immutable Plane
-    e1 :: Float64
-    e2 :: Float64
-    e3 :: Float64
-    e4 :: Float64
-end
+typealias Plane Vector4{Float64}
 
 # Given three vertices, determines coefficients of the
 # corresponding plane equation

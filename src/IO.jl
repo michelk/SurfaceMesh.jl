@@ -35,7 +35,7 @@ export importFrom2dm
 #========
 
 # | Write 'IndexedFaceSet' to an IOStream
-function exportTo2dm(con::IO,m::IndexedFaceSet)
+function exportTo2dm(m::IndexedFaceSet, con::IO)
     function renderVertex(i::Int,v::Vertex) # :: String
         "ND $i $(v.e1) $(v.e2) $(v.e3)\n"
     end
@@ -53,9 +53,9 @@ function exportTo2dm(con::IO,m::IndexedFaceSet)
 end
 
 # | Write a 'IndexedFaceSet' to file in SMS-.2dm-file-format
-function exportTo2dm(f::String,m::IndexedFaceSet)
+function exportTo2dm(m::IndexedFaceSet, f::String)
     con = open(f, "w")
-    exportTo2dm(con, m)
+    exportTo2dm(m, con)
     close(con)
     nothing
 end
