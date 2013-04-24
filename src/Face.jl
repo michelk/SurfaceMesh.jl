@@ -6,3 +6,10 @@ function area(e::Face)
     end
     sum(a)
 end
+
+function normal(f::Face)
+    a = (f.v2 - f.v1)
+    b = (f.v3 - f.v2)
+    cross(a,b)
+end
+export normal
