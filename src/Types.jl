@@ -1,8 +1,9 @@
 #s Index Face Represenation
 #==========================
 using ImmutableArrays
+export Vertex, Index, VertexMap, IndexedFace, IndexedFaceMap,
+       IndexedFaceSet, Face, FaceSet, Plane, plane
 typealias Vertex    Vector3{Float64}
-
 typealias Index     Int
 typealias VertexMap Dict{Index, Vertex}
 
@@ -30,7 +31,6 @@ immutable Face
 end
 
 typealias FaceSet Array{Face}
-
 
 # Misc Types
 #===========
