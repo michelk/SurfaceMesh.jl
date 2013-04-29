@@ -1,11 +1,8 @@
 # Readers
-#========
+# =======
 
 # | Read a .2dm (SMS Aquaveo) mesh-file and construct a 'IndexedFaceSet'
-function importFrom2dm(con::IOStream)
-    function parseNode(w::Array{String})
-        
-    end
+function importFrom2dm(con::IOStream) # :: SmsMesh
     nds = VertexMap()
     fcs = IndexedFaceMap()
     frs = Dict{Index,Index}()
@@ -19,19 +16,19 @@ function importFrom2dm(con::IOStream)
             fcs[i] = IndexedFace(int(w[3]), int(w[4]), int(w[5]))  
             frs[i] = int(w[6])
         elseif w[1] == "E4Q"
-            error("Only triangular-meshes currently supported")
+            error("Only triangular-meshes currently supported, sorry.")
         else
             continue
         end
     end
-    (IndexedFaceSet(nds,fcs), frs)
+    SmsMesh(IndexedFaceSet(nds,fcs), frs, IndexMap())
 end
 
 importFrom2dm(file::String) = open(importFrom2dm,file)
 export importFrom2dm
-# Writers
-#========
 
+# Writers
+# =======
 # | Write 'IndexedFaceSet' to an IOStream
 function exportTo2dm(m::IndexedFaceSet, frs :: Dict{Index, Index}, con::IO)
     function renderVertex(i::Int,v::Vertex) # :: String

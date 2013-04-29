@@ -1,11 +1,12 @@
-#s Index Face Represenation
-#==========================
+# Index Face Represenation
+# ========================
 using ImmutableArrays
 export Vertex, Index, VertexMap, IndexedFace, IndexedFaceMap,
-       IndexedFaceSet, Face, FaceSet, Plane, plane
+       IndexedFaceSet, Face, FaceSet, SmsMesh, Plane, plane 
 typealias Vertex    Vector3{Float64}
 typealias Index     Int
 typealias VertexMap Dict{Index, Vertex}
+typealias IndexMap Dict{Index,Index}
 
 immutable IndexedFace
     v1 :: Index
@@ -23,7 +24,7 @@ end
 
 
 # Face Mesh Representation
-#=========================
+# ========================
 immutable Face
     v1 :: Vertex
     v2 :: Vertex
@@ -32,8 +33,18 @@ end
 
 typealias FaceSet Array{Face}
 
+# Vendor specific types
+# =====================
+
+# | .2dm-meshes from Aquaveo
+type SmsMesh
+    msh   :: IndexedFaceSet
+    frs   :: IndexMap       # ^ Index-friction-zone mapping
+    bcNds :: IndexMap       # ^ boundary-condition vertices
+end
+
 # Misc Types
-#===========
+# ==========
 
 # Planes (copied from the Meshes module)
 # --------------------------------------
