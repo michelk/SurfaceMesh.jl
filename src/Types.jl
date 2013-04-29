@@ -39,9 +39,16 @@ typealias FaceSet Array{Face}
 # | .2dm-meshes from Aquaveo
 type SmsMesh
     msh   :: IndexedFaceSet
-    frs   :: IndexMap       # ^ Index-friction-zone mapping
-    bcNds :: IndexMap       # ^ boundary-condition vertices
+    frs   :: IndexMap             # ^ Index-friction-zone mapping
+    bcNds :: Dict{Int,Array{Int}} # ^ id with boundary-condition-vertex-indices
 end
+
+import Base.show
+# | Association lists are shown too verbosely
+function show(io::IO, x::SmsMesh)
+    println("")
+end
+export show
 
 # Misc Types
 # ==========
