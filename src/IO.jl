@@ -59,13 +59,12 @@ function exportTo2dm(m::SmsMesh, con::IO)
     write(con, "MESH2D\n")
     write(con, "NUM_MATERIALS_PER_ELEM 1\n")
     # Write faces
-    # TODO use: sort(keys(m.msh.fcs)); currently there seems to be a bu
-    for i = 1:length(m.msh.fcs)
+    for i = sort(collect(keys(m.msh.fcs)))
         write(con, renderIndexedFace(i, m.msh.fcs[i], m.frs[i]))
     end
+
     # Write vertices
-    # TODO use: sort(keys(m.msh.vs))
-    for i = 1:length(m.msh.vs)
+    for i = sort(collect(keys(m.msh.vs)))
         write(con, renderVertex(i, m.msh.vs[i]))
     end
     nothing
