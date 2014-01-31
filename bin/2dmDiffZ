@@ -13,5 +13,5 @@ end
 using SurfaceMesh
 
 mshs = map(importFrom2dm, ARGS)
-md = diff(mshs[1].msh, mshs[1].msh)
+md = diff(mshs[1].msh, mshs[2].msh)
 exportTo2dm(SmsMesh(md,mshs[1].frs, mshs[1].bcNds), STDOUT)
