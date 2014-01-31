@@ -30,13 +30,13 @@ function diff(m1::IndexedFaceSet,m2::IndexedFaceSet)
     for i = keys(m1.vs)
         v1 = m1.vs[i]
         v2 = m2.vs[i]
-        merge!(vertices,[i => Vertex(v1.x, v1.y, v2.z - v1.z)])
+        merge!(vertices,[i => Vertex(v1.e1, v1.e2, v2.e3 - v1.e3)])
     end
     IndexedFaceSet(vertices, m1.fcs)
 end
 export diff
 
 import Base.convert
-convert(::Type{FaceSet},x::IndexedFaceSet) = 
+convert(::Type{FaceSet},x::IndexedFaceSet) =
     FaceSet(Face[Face(x.vs[f.e1], x.vs[f.e2], x.vs[f.e3]) for f = values(x.fcs)])
 export convert

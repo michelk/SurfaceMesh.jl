@@ -2,7 +2,6 @@ Face(ifc::IndexedFace, nds :: VertexMap) =  Face(nds[ifc.v1], nds[ifc.v2], nds[i
 
 # | Interpolate z-value of the vertices from one  'Mesh' to another 'Mesh'
 function interpolateZ(m::IndexedFaceSet,from::IndexedFaceSet) #:: IndexedFaceSet 
-    
     nds = (Index => Vertex)[i => interpolateZ(m.vs[i], from) for i = keys(m.vs)]
     IndexedFaceSet(nds,m.fcs)
 end
@@ -17,9 +16,30 @@ function interpolateZ(v::Vertex, m :: IndexedFaceSet) # :: Vertex
         end 
 end
 
+# | Filter those faces which contain the vertex
+function whichFacesContain(v :: Vertex, m :: IndexedFaceSet)
+    filter([(k,Face(f,m.vs)) for (k,f) = m.fcs]) do x
+        (k,f) = x
+        contains(f,v)
+    end
+end
+export whichFacesContain
+
+# | Interpolate a single vertex from 'IndexedFaceSet' with certain 'Face'-Id
+function interpolateZ(v::Vertex, i :: Int, m :: IndexedFaceSet) # :: Vertex
+        f = Face(m.fcs[i],m.vs)
+        interpolateZ(v,f)
+end
+
 # | Interpolate elevation of a set of xy-vertices from an 'IndexedFaceSet'
 function interpolateZ(vs::Vector{Vertex}, m :: IndexedFaceSet) # ::Vector{Vertex}
     map(v -> interpolateZ(v,m), vs)
+end
+
+# | Interpolate elevation of a set of xy-vertices from an 'IndexedFaceSet' with
+#   certain face-ids to accelerate search
+function interpolateZ(vs::Vector{Vertex}, is :: Vector{Int}, m :: IndexedFaceSet) # ::Vector{Vertex}
+    Vertex[interpolateZ(vs[i],is[i],m) for i = 1:length(vs)]
 end
 
 # | Interpolate the elevation of 'Vertex' from a 'IndexedFace'

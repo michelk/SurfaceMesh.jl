@@ -1,0 +1,17 @@
+#!/usr/bin/julia
+# | Compare node-z-values of two meshes (.2dm); results in a new diff-mesh
+about = "Program to compare node-z-values of two mesh (.2dm)\n\n"
+usage = "Usage: 2dmDiffZ var1.2dm var2.2dm > var_diff.2dm\n"
+if ARGS in ["-h", "--help"]
+    print(about, usage)
+    exit(0)
+elseif length(ARGS) != 2
+    print("Please provide two meshes to compare node-z-values")
+    exit(1)
+end
+
+using SurfaceMesh
+
+mshs = map(importFrom2dm, ARGS)
+md = diff(mshs[1].msh, mshs[1].msh)
+exportTo2dm(SmsMesh(md,mshs[1].frs, mshs[1].bcNds), STDOUT)

@@ -1,27 +1,46 @@
-# Readers
-# =======
+## * Readers
+# | Extract node-strings from 2dm-file
+function extractNodeStringsFrom2dm(con:: IOStream)
+    nsstr = ""
+    for line = readlines(con)
+        line = chomp(line)
+        w = split(line)
+        if w[1] == "NS"
+            nsstr = join([nsstr, parseNsLine(line)], " ")
+        else
+            continue
+        end
+    end
+    parseNss(nsstr)
+end
+extractNodeStringsFrom2dm(file::String) = open(extractNodeStringsFrom2dm,file)
+export extractNodeStringsFrom2dm
+
+# | Read a node-string-line
+parseNsLine(l::String) = replace(l, r"^NS\s*", "")
+
+# | Parse an array of nodes which are delimited by a zero-value and id
+function parseNss(x::String) # :: Dic{Int,Array{Int}}
+    x_split = map(split, split(x, " -"))
+    nss = Dict{Int,Array{Int}}()
+    if length(x_split) == 2
+        nss[1] = [int(x_split[1][2:length(x_split[1])]), int(x_split[2])]
+    else
+        for i = 1:(length(x_split)-1)
+            nds = [int(x_split[i]), int(shift!(x_split[i+1]))]
+            nss[int(shift!(x_split[i+1]))] = nds
+        end
+    end
+    nss         # ^ Returns an array of NodeString
+end
 
 # | Read a .2dm (SMS Aquaveo) mesh-file and construct a 'IndexedFaceSet'
 function importFrom2dm(con::IOStream) # :: SmsMesh
-    parseNsLine(l::String) = replace(l, r"^NS\s*", "")
-    # | Parse an array of nodes which are delimited by a zero-value and id
-    function parseNss(x::String) # :: Dic{Int,Array{Int}}
-        x_split = map(split, split(x, " -"))
-        nss = Dict{Int,Array{Int}}()
-        if length(x_split) == 2
-            nss[1] = [int(x_split[1][2:length(x_split[1])]), int(x_split[2])]
-        else
-            for i = 1:(length(x_split)-1)
-                nds = [int(x_split[i]), int(shift!(x_split[i+1]))]
-                nss[int(shift!(x_split[i+1]))] = nds
-            end
-        end
-        nss         # ^ Returns an array of NodeString
-    end
     nsstr = ""
     nds = VertexMap()
     fcs = IndexedFaceMap()
     frs = Dict{Index,Index}()
+    quads = (IndexedFace,Index)[]
     for line = readlines(con)
         line = chomp(line)
         w = split(line)
@@ -29,16 +48,27 @@ function importFrom2dm(con::IOStream) # :: SmsMesh
             nds[int(w[2])] = Vertex(float(w[3]), float(w[4]), float(w[5]))
         elseif w[1] == "E3T"
             i = int(w[2])
-            fcs[i] = IndexedFace(int(w[3]), int(w[4]), int(w[5]))  
+            fcs[i] = IndexedFace(int(w[3]), int(w[4]), int(w[5]))
             frs[i] = int(w[6])
         elseif w[1] == "E4Q"
-            error("Only triangular-meshes currently supported, sorry.")
-
+            warn("Quadrilateral elements divided into triangles!")
+            i = int(w[2])
+            fcs[i] = IndexedFace(int(w[3]), int(w[4]), int(w[5]))
+            frs[i] = int(w[7])
+            push!(quads, (IndexedFace(int(w[5]), int(w[6]), int(w[3])), int(w[7])))
         elseif w[1] == "NS"
             nsstr = join([nsstr, parseNsLine(line)], " ")
         else
             continue
         end
+    end
+    ## append second triangle from quadrilateral elements
+    mxEleNmb = maximum(keys(fcs))
+    for i = 1:length(quads)
+        eleId = mxEleNmb + i
+        (f,r) = quads[i]
+        fcs[i] = f
+        frs[i] = r
     end
     SmsMesh(IndexedFaceSet(nds,fcs), frs, parseNss(nsstr))
 end
@@ -46,8 +76,7 @@ end
 importFrom2dm(file::String) = open(importFrom2dm,file)
 export importFrom2dm
 
-# Writers
-# =======
+## * Writers
 # | Write 'IndexedFaceSet' to an IOStream
 function exportTo2dm(m::SmsMesh, con::IO)
     function renderVertex(i::Int,v::Vertex) # :: String
