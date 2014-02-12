@@ -1,0 +1,50 @@
+#!/usr/bin/env julia
+if length(ARGS) == 0 || length(ARGS) > 1 || ARGS[1] in ["-h", "--help"]
+    print("Usage: trianglemeshToSms triMesh.1 > triMesh.2dm")
+    exit()
+end
+unlines(x) = join(x, "\n")
+f = ARGS[1]
+bf = replace(f, r"(.ele|.node)", "")
+nme = replace(basename(bf), ".1", "")
+
+smsHeader = ["MESH2D" ,"MESHNAME \"$nme\"" ,"NUM_MATERIALS_PER_ELEM 1", ""]
+
+write(STDOUT, unlines(smsHeader))
+
+fel = open("$bf.ele", "r")
+eleHd = readline(fel)
+while true
+    l = readline(fel)
+    if l == ""
+        break
+    else
+        l = replace(l, r"#.*", "")
+        wds = split(l)
+        if length(wds) != 4
+            break
+        end
+        (i,v1,v2,v3) = wds
+        write("E3T $i $v1 $v2 $v3 0\n")
+    end
+end
+close(fel)
+
+fnd = open("$bf.node", "r")
+ndHd = readline(fnd)
+while true
+    l = readline(fnd)
+    if l == ""
+        break
+    else
+        l = replace(l, r"#.*", "")
+        wds = split(l)
+        if length(wds) != 4
+            break
+        end
+        (i,x,y) = split(l)
+        (x,y) = round([x,y], 3)
+        write("ND $i $x $y 0\n")
+    end
+end
+close(fnd)
