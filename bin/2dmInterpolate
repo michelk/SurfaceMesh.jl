@@ -1,0 +1,11 @@
+#!/usr/bin/env julia
+# | Program to interpolate node-z-values from another mesh
+if (ARGS in ["-h", "--help"]) || length(ARGS) == 0
+    print("Usage 2dmInterpolate toInt.2dm from.2dm")
+    exit()
+end
+
+using SurfaceMesh
+ms = map(importFrom2dm, ARGS)
+m = SmsMesh(interpolateZ(ms[1].msh, ms[2].msh), ms[1].frs, ms[1].bcNds)
+exportTo2dm(m)
