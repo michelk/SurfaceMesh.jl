@@ -4,4 +4,5 @@ module SurfaceMesh
     include("Face.jl")
     include("Interpolation.jl")
     include("IO.jl")
+    include("Transform.jl")
 end

@@ -1,0 +1,58 @@
+#!/usr/bin/env julia
+using ArgParse
+using SurfaceMesh
+
+function parseCmd(args)
+    s = ArgParseSettings("Transform a 2dm-mesh: " *
+                         "translation, scaling: ")
+    @add_arg_table s begin
+        "--transX"
+          arg_type = FloatingPoint
+          default = 0.0
+          help = "Translation in x"
+        "--transY"
+          arg_type = FloatingPoint
+          default = 0.0
+          help = "Translation in x"
+        "--transZ"
+          arg_type = FloatingPoint
+          default = 0.0
+          help = "Translation in x"
+        "--scale"
+          arg_type = FloatingPoint
+          default = 1.0
+          help = "Scaling factor"
+        "mesh-file"
+          help = "mesh (2dm)-file"
+    end
+    parse_args(args, s)
+end
+
+openMesh(f::String) = open(f)
+openMesh(f::Nothing) = STDIN
+
+function main()
+    args = parseCmd(ARGS)
+    con = openMesh(args["mesh-file"])
+    while true
+        l = readline(con)
+        if l == ""
+            break
+        else
+            m = match(r"^ND", l)
+            if m ==  nothing
+                write(l)
+            else
+                (i, v1,v2,v3) = split(l)[2:end] |> float
+               v = Vertex(v1,v2,v3)
+               vn =
+                   (v + Vertex(args["transX"], args["transY"], args["transZ"])) *
+                    args["scale"]
+                (vn1, vn2, vn3) = round(vn, 3)
+                write("ND $(int(i)) $vn1 $vn2 $vn3\n")
+            end
+        end
+    end
+end
+
+main()
