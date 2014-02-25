@@ -1,5 +1,5 @@
 #!/usr/bin/env julia
-# | Program to interpolate node-z-values from another mesh
+# | Interpolate node-z-values from another mesh
 if (ARGS in ["-h", "--help"]) || length(ARGS) == 0
     print("Usage 2dmInterpolate toInt.2dm from.2dm")
     exit()

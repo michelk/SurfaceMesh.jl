@@ -1,4 +1,5 @@
 #!/usr/bin/env julia
+# | Convert a mesh created by triangle to 2dm
 if length(ARGS) == 0 || length(ARGS) > 1 || ARGS[1] in ["-h", "--help"]
     print("Usage: trianglemeshToSms triMesh.1 > triMesh.2dm")
     exit()

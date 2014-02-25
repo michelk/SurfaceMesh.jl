@@ -1,4 +1,6 @@
 #!/usr/bin/env julia
+# | Transform a 2dm-mesh (currently translation and scaling)
+#   TODO: rotation, centering bbox 
 using ArgParse
 using SurfaceMesh
 
