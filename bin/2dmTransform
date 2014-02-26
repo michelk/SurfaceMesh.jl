@@ -1,6 +1,6 @@
 #!/usr/bin/env julia
 # | Transform a 2dm-mesh (currently translation and scaling)
-#   TODO: rotation, centering bbox 
+#   TODO: rotation, centering bbox
 using ArgParse
 using SurfaceMesh
 
@@ -8,22 +8,26 @@ function parseCmd(args)
     s = ArgParseSettings("Transform a 2dm-mesh: " *
                          "translation, scaling: ")
     @add_arg_table s begin
-        "--transX"
+        "--transX", "-x"
           arg_type = FloatingPoint
           default = 0.0
           help = "Translation in x"
-        "--transY"
+        "--transY", "-y"
           arg_type = FloatingPoint
           default = 0.0
           help = "Translation in x"
-        "--transZ"
+        "--transZ", "-z"
           arg_type = FloatingPoint
           default = 0.0
           help = "Translation in x"
-        "--scale"
+        "--scale", "-s"
           arg_type = FloatingPoint
           default = 1.0
           help = "Scaling factor"
+        "--coords_order", "-c"
+          arg_type = String
+          default = "1:2:3"
+          help = "Coordinate axis order"
         "mesh-file"
           help = "mesh (2dm)-file"
     end
@@ -36,6 +40,7 @@ openMesh(f::Nothing) = STDIN
 function main()
     args = parseCmd(ARGS)
     con = openMesh(args["mesh-file"])
+    cco = int(split(args["coords_order"], ":"))
     while true
         l = readline(con)
         if l == ""
@@ -50,7 +55,7 @@ function main()
                vn =
                    (v + Vertex(args["transX"], args["transY"], args["transZ"])) *
                     args["scale"]
-                (vn1, vn2, vn3) = round(vn, 3)
+                (vn1, vn2, vn3) = round(vn, 3)[cco]
                 write("ND $(int(i)) $vn1 $vn2 $vn3\n")
             end
         end
