@@ -1,0 +1,87 @@
+#!/usr/bin/env julia
+# | Remove elements marked with an certain id
+## * Local function definitions
+using ArgParse
+
+function parseCmd(a)
+    splitIds(s) = int(split(s, ':'))
+
+    s = ArgParseSettings("Remove certain BC-Elements")
+    @add_arg_table s begin
+        "--id", "-i"
+          arg_type = String
+          help = "BC Element ID to remove from mesh (concat with ':'; eg '1:2')"
+        "mesh-file"
+          help = "mesh (2dm)-file"
+    end
+    args = parse_args(a, s)
+
+    if args["id"] == nothing
+        print("Please specify an BC-Element-Id to remove from mesh\n")
+        exit(1)
+    else
+        args["id"] = splitIds(args["id"])
+    end
+    args
+end
+
+function parse2dmBcValE(f::String, ids::Array{Int,1})
+    bcs = Int[]
+    con = openMesh(f)
+    while true
+        l = readline(con)
+        if l == ""
+            break
+        else
+            m = match(r"^BC_VAL", l)
+            if m == nothing
+                continue
+            else
+                (n,v) = parseBcEleLine(l)
+                if v in ids
+                    push!(bcs, n)
+                else
+                    continue
+                end
+            end
+        end
+    end
+    close(con)
+    bcs
+end
+
+function write2dmWithoutBcValE(f::String, bcs :: Array{Int,1})
+    con = openMesh(f)
+    while true
+        l = readline(con)
+        if l == ""
+            break
+        else
+            m = match(r"^(E3T|E4Q)", l)
+            if m == nothing
+                write(l)
+            else
+                n = int(split(l)[2])
+                if n in bcs
+                    continue
+                else
+                    write(l)
+                end
+            end
+        end
+    end
+    close(con)
+end
+
+openMesh(f :: Nothing) = STDIN
+openMesh(f :: String) = open(f, "r")
+parseBcEleLine(l :: String) = int(split(l)[3:4])
+
+function main()
+    args = parseCmd(ARGS)           # parse command-line
+    bcs =                           # get element ids, with BC_VAL-tag
+        parse2dmBcValE(args["mesh-file"], args["id"])
+    write2dmWithoutBcValE(args["mesh-file"], bcs) # write modified mesh to stdout
+end
+
+main()                                  # actually do it
