@@ -30,3 +30,10 @@ triangleMeshToSms
     Usage:
 
         trianglemeshToSms triMesh.1 > triMesh.2dm"
+
+2dmRmBcEle
+:   Remove elements with certain BC_VAL
+
+    Usage:
+
+        2dmRmBcEle --id 4:5 mesh.2dm > meshO4et5.2dm
