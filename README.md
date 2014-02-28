@@ -36,4 +36,4 @@ triangleMeshToSms
 
     Usage:
 
-        2dmRmBcEle --id 4:5 mesh.2dm > meshO4et5.2dm
+        2dmRmBcEle --name wall:quai mesh.2dm > mesh_holes.2dm
