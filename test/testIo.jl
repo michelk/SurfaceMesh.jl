@@ -1,5 +1,5 @@
 require("SurfaceMesh")
 using SurfaceMesh
-(m,fr) = importFrom2dm("ex.2dm")
-exportTo2dm(m, fr)
+(m,fr) = read2dm("ex.2dm")
+write2dm(m, fr)
 

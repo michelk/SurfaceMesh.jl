@@ -35,7 +35,7 @@ function parseNss(x::String) # :: Dic{Int,Array{Int}}
 end
 
 # | Read a .2dm (SMS Aquaveo) mesh-file and construct a 'IndexedFaceSet'
-function importFrom2dm(con::IOStream) # :: SmsMesh
+function read2dm(con::IOStream) # :: SmsMesh
     nsstr = ""
     nds = VertexMap()
     fcs = IndexedFaceMap()
@@ -73,12 +73,12 @@ function importFrom2dm(con::IOStream) # :: SmsMesh
     SmsMesh(IndexedFaceSet(nds,fcs), frs, parseNss(nsstr))
 end
 
-importFrom2dm(file::String) = open(importFrom2dm,file)
-export importFrom2dm
+read2dm(file::String) = open(read2dm,file)
+export read2dm
 
 ## * Writers
 # | Write 'IndexedFaceSet' to an IOStream
-function exportTo2dm(m::SmsMesh, con::IO)
+function write2dm(m::SmsMesh, con::IO)
     function renderVertex(i::Int,v::Vertex) # :: String
         "ND $i $(v.e1) $(v.e2) $(v.e3)\n"
     end
@@ -99,16 +99,16 @@ function exportTo2dm(m::SmsMesh, con::IO)
     nothing
 end
 
-exportTo2dm(m::SmsMesh) = exportTo2dm(m,STDOUT)
+write2dm(m::SmsMesh) = write2dm(m,STDOUT)
 
 # | Write a 'IndexedFaceSet' to file in SMS-.2dm-file-format
-function exportTo2dm(m:: SmsMesh, f::String)
+function write2dm(m:: SmsMesh, f::String)
     con = open(f, "w")
-    exportTo2dm(m, con)
+    write2dm(m, con)
     close(con)
     nothing
 end
-export exportTo2dm
+export write2dm
 
 # | Render 'FaceSet' as Stl-string
 function exportToStl(m::FaceSet)

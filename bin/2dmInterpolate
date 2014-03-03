@@ -6,6 +6,6 @@ if (ARGS in ["-h", "--help"]) || length(ARGS) == 0
 end
 
 using SurfaceMesh
-ms = map(importFrom2dm, ARGS)
+ms = map(read2dm, ARGS)
 m = SmsMesh(interpolateZ(ms[1].msh, ms[2].msh), ms[1].frs, ms[1].bcNds)
-exportTo2dm(m)
+write2dm(m)
