@@ -63,16 +63,21 @@ function write2dmWithoutBcValE(f::String, bcs :: Array{Int,1})
         if l == ""
             break
         else
-            m = match(r"^(E3T|E4Q)", l)
-            if m == nothing
-                write(l)
-            else
+            if match(r"^(E3T|E4Q)", l) != nothing
                 n = int(split(l)[2])
                 if n in bcs
                     continue
                 else
                     write(l)
                 end
+            elseif match(r"^(BC_VAL\s+E)", l) != nothing
+                if int(split(l)[3]) in bcs
+                    continue
+                else
+                    write(l)
+                end
+            else
+                write(l)
             end
         end
     end

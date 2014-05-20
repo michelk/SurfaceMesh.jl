@@ -6,6 +6,7 @@ function area(e::Face)
     end
     sum(a)
 end
+export area
 
 function normal(f::Face)
     a = (f.v2 - f.v1)
@@ -13,3 +14,13 @@ function normal(f::Face)
     cross(a,b)
 end
 export normal
+
+# | Find the face-id of the axis-vertices
+function findFacesId(m::IndexedFaceSet, vs:: Array{Vertex})
+        ifs = [whichFacesContain(v,m) for v = vs]
+        map(ifs) do x
+            (k,v) = x[1]
+            k
+        end
+end
+export findFacesId

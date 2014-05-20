@@ -1,7 +1,8 @@
 #!/usr/bin/env julia
 # | Interpolate node-z-values from another mesh
-if (ARGS in ["-h", "--help"]) || length(ARGS) == 0
-    print("Usage 2dmInterpolate toInt.2dm from.2dm")
+#  TODO: NS and BC_VAL values are skipped!
+if (ARGS[1] in ["-h", "--help"]) || length(ARGS) == 0
+    print("Usage 2dmInterpolate src.2dm heights.2dm > dest.2dm\n")
     exit()
 end
 
