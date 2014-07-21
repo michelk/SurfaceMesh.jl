@@ -67,8 +67,8 @@ function importFrom2dm(con::IOStream) # :: SmsMesh
     for i = 1:length(quads)
         eleId = mxEleNmb + i
         (f,r) = quads[i]
-        fcs[i] = f
-        frs[i] = r
+        fcs[eleId] = f
+        frs[eleId] = r
     end
     SmsMesh(IndexedFaceSet(nds,fcs), frs, parseNss(nsstr))
 end
