@@ -6,7 +6,7 @@ function interpolateZ(m::IndexedFaceSet,from::IndexedFaceSet) #:: IndexedFaceSet
     IndexedFaceSet(nds,m.fcs)
 end
 
-# | Interpolate a single vertex from 'IndexedFaceSet'
+# | Interpolate a single 'Vertex' from 'IndexedFaceSet'
 function interpolateZ(v::Vertex, m :: IndexedFaceSet) # :: Vertex
         fc = filter(x -> contains(x,v), [Face(f,m.vs) for f = values(m.fcs)])
         if length(fc) == 0

@@ -1,0 +1,33 @@
+#!/usr/bin/env julia
+# | `usage`
+## * command-line parsing
+usage = join(["Program to extract points of basement-solution for each given time-step\n",
+             "Usage: solExtractXy <vertices.xyd> <mesh.2dm> <res.sol>\n"], "\n")
+
+if length(ARGS) != 3
+    println(usage)
+    exit()
+else
+    ##ARGS= ["./resan_POTE.xy", "./3d_Biel.2dm"]
+    (vert_file,msh_file) = ARGS
+end
+
+using SurfaceMesh
+function xyToVert(df) #:: Array{Vertex}
+    xy = df[:,1:2]
+    map(1:size(df)[1]) do i
+        (x,y) = xy[i,1:2]
+        Vertex(x,y, 0)
+    end
+end
+
+m   = importFrom2dm(msh_file)
+(df, nms)  = readdlm(vert_file, header = true)
+vs  = xyToVert(df)
+k = findFacesId(m.msh,vs) # faces which intersect with axis-coordinates (ids returned)
+xy = interpolateZ(vs,k,m.msh)
+for i = 1:length(vs)
+    x = round(xy[i].e3, 3)
+    write(STDOUT, "$x\n" )
+end
+exit()
