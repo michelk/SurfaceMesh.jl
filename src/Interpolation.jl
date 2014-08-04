@@ -1,7 +1,7 @@
 Face(ifc::IndexedFace, nds :: VertexMap) =  Face(nds[ifc.v1], nds[ifc.v2], nds[ifc.v3])
 
 # | Interpolate z-value of the vertices from one  'Mesh' to another 'Mesh'
-function interpolateZ(m::IndexedFaceSet,from::IndexedFaceSet) #:: IndexedFaceSet 
+function interpolateZ(m::IndexedFaceSet,from::IndexedFaceSet) #:: IndexedFaceSet
     nds = (Index => Vertex)[i => interpolateZ(m.vs[i], from) for i = keys(m.vs)]
     IndexedFaceSet(nds,m.fcs)
 end
@@ -11,9 +11,9 @@ function interpolateZ(v::Vertex, m :: IndexedFaceSet) # :: Vertex
         fc = filter(x -> contains(x,v), [Face(f,m.vs) for f = values(m.fcs)])
         if length(fc) == 0
             v
-        else    
+        else
             interpolateZ(v,fc[1])
-        end 
+        end
 end
 
 # | Filter those faces which contain the vertex
@@ -27,9 +27,15 @@ export whichFacesContain
 
 # | Interpolate a single vertex from 'IndexedFaceSet' with certain 'Face'-Id
 function interpolateZ(v::Vertex, i :: Int, m :: IndexedFaceSet) # :: Vertex
+    if i == na
+        (x,y,z) = v
+        Vertex(x,y,na)
+    else
         f = Face(m.fcs[i],m.vs)
         interpolateZ(v,f)
+    end
 end
+
 
 # | Interpolate elevation of a set of xy-vertices from an 'IndexedFaceSet'
 function interpolateZ(vs::Vector{Vertex}, m :: IndexedFaceSet) # ::Vector{Vertex}
@@ -39,6 +45,11 @@ end
 # | Interpolate elevation of a set of xy-vertices from an 'IndexedFaceSet' with
 #   certain face-ids to accelerate search
 function interpolateZ(vs::Vector{Vertex}, is :: Vector{Int}, m :: IndexedFaceSet) # ::Vector{Vertex}
+    Vertex[interpolateZ(vs[i],is[i],m) for i = 1:length(vs)]
+end
+# | Interpolate elevation of a set of xy-vertices from an 'IndexedFaceSet' with
+#   certain face-ids to accelerate search
+function interpolateZ(vs::Vector{Vertex}, is :: Vector{Any}, m :: IndexedFaceSet) # ::Vector{Vertex}
     Vertex[interpolateZ(vs[i],is[i],m) for i = 1:length(vs)]
 end
 
@@ -51,7 +62,7 @@ function interpolateZ(v::Vertex, f::Face) # :: Vertex
     end
 end
 
-# | Interpolate the elevation 
+# | Interpolate the elevation
 function interpolateZ(v::Vertex,p::Plane) # :: Vertex
     z = -((p.e1*v.e1 + p.e2*v.e2 + p.e4)/p.e3)
     Vertex(v.e1, v.e2, z)

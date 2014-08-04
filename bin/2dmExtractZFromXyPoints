@@ -1,14 +1,14 @@
 #!/usr/bin/env julia
 # | `usage`
 ## * command-line parsing
-usage = join(["Program to extract points of basement-solution for each given time-step\n",
-             "Usage: solExtractXy <vertices.xyd> <mesh.2dm> <res.sol>\n"], "\n")
+usage = join(["Program to interpolate Z value of xy-points from a mesh\n",
+             "Usage: 2dmExtractZFromXyPoints <vertices.xy> <mesh.2dm> > vertices.xyz\n"], "\n")
 
-if length(ARGS) != 3
+if length(ARGS) != 2
     println(usage)
     exit()
 else
-    ##ARGS= ["./resan_POTE.xy", "./3d_Biel.2dm"]
+    ##ARGS= ["./tb_GWMessstellen_lv95.xy", "./3d_Biel_ZKOR_3.2dm"]
     (vert_file,msh_file) = ARGS
 end
 
@@ -27,7 +27,7 @@ vs  = xyToVert(df)
 k = findFacesId(m.msh,vs) # faces which intersect with axis-coordinates (ids returned)
 xy = interpolateZ(vs,k,m.msh)
 for i = 1:length(vs)
-    x = round(xy[i].e3, 3)
-    write(STDOUT, "$x\n" )
+    (x,y,z) = round(xy[i], 3)
+    write(STDOUT, "$x $y $z\n" )
 end
 exit()
