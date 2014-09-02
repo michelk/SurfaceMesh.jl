@@ -22,7 +22,7 @@ function xyToVert(df) #:: Array{Vertex}
 end
 
 m   = importFrom2dm(msh_file)
-(df, nms)  = readdlm(vert_file, header = true)
+df  = readdlm(vert_file)
 vs  = xyToVert(df)
 k = findFacesId(m.msh,vs) # faces which intersect with axis-coordinates (ids returned)
 xy = interpolateZ(vs,k,m.msh)
