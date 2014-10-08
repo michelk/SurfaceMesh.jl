@@ -1,0 +1,9 @@
+#!/usr/bin/env julia
+if (ARGS[1] in ["-h", "--help"]) || length(ARGS) == 0
+    print("Usage: 2dmSplitQuad mesh_quad.2dm > mesh_tri.2dm\n")
+    exit()
+end
+
+using SurfaceMesh
+m = importFrom2dm(ARGS[1])
+exportTo2dm(m)

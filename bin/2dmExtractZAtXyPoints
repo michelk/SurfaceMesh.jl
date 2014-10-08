@@ -1,0 +1,33 @@
+#!/usr/bin/env julia
+# | `usage`
+## * command-line parsing
+usage = join(["Program to interpolate Z value of xy-points from a mesh\n",
+             "Usage: 2dmExtractZFromXyPoints <vertices.xy> <mesh.2dm> > vertices.xyz\n"], "\n")
+
+if length(ARGS) != 2
+    println(usage)
+    exit()
+else
+    ##ARGS= ["./tb_GWMessstellen_lv95.xy", "./3d_Biel_ZKOR_3.2dm"]
+    (vert_file,msh_file) = ARGS
+end
+
+using SurfaceMesh
+function xyToVert(df) #:: Array{Vertex}
+    xy = df[:,1:2]
+    map(1:size(df)[1]) do i
+        (x,y) = xy[i,1:2]
+        Vertex(x,y, 0)
+    end
+end
+
+m   = importFrom2dm(msh_file)
+df  = readdlm(vert_file)
+vs  = xyToVert(df)
+k = findFacesId(m.msh,vs) # faces which intersect with axis-coordinates (ids returned)
+xy = interpolateZ(vs,k,m.msh)
+for i = 1:length(vs)
+    (x,y,z) = round(xy[i], 3)
+    write(STDOUT, "$x $y $z\n" )
+end
+exit()

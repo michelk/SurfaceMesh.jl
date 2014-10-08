@@ -1,3 +1,4 @@
+const na = -99999
 function area(e::Face)
     push!(e.nds, e.nds[1])
     a = Array(FloatingPoint,0)
@@ -6,6 +7,7 @@ function area(e::Face)
     end
     sum(a)
 end
+export area
 
 function normal(f::Face)
     a = (f.v2 - f.v1)
@@ -13,3 +15,17 @@ function normal(f::Face)
     cross(a,b)
 end
 export normal
+
+# | Find the face-id of the axis-vertices
+function findFacesId(m::IndexedFaceSet, vs:: Array{Vertex}) # :: Arrays{Int}
+    ifs = [whichFacesContain(v,m) for v = vs]
+    map(ifs) do x
+        if length(x) == 0
+            na
+        else
+            (k,v) = x[1]
+            k
+        end
+    end
+end
+export findFacesId
