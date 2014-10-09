@@ -85,6 +85,11 @@ function write2dm(m::SmsMesh, con::IO)
     function renderIndexedFace(i::Int, f::IndexedFace, fr::Index) # :: String
         "E3T $i $(f.v1) $(f.v2) $(f.v3) $fr\n"
     end
+    function renderNodeString(i::Int, inds :: Array{Int})
+        inds_str = join(inds[1:(length(inds)-1)], " ")
+        lst = inds[length(inds)]
+        "NS $inds_str -$lst $i\n"
+    end
     write(con, "MESH2D\n")
     write(con, "NUM_MATERIALS_PER_ELEM 1\n")
     # Write faces
@@ -95,6 +100,11 @@ function write2dm(m::SmsMesh, con::IO)
     # Write vertices
     for i = sort(collect(keys(m.msh.vs)))
         write(con, renderVertex(i, m.msh.vs[i]))
+    end
+
+    # Write Nodestrings
+    for i = sort(collect(keys(m.bcNds)))
+        write(con, renderNodeString(i, m.bcNds[i]))
     end
     nothing
 end
