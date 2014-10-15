@@ -1,6 +1,6 @@
 ## * Readers
 # | Extract node-strings from 2dm-file
-function extractNodeStringsFrom2dm(con:: IOStream)
+function extractNodeStringsFrom2dm(con:: IO)
     nsstr = ""
     for line = readlines(con)
         line = chomp(line)
@@ -35,7 +35,7 @@ function parseNss(x::String) # :: Dic{Int,Array{Int}}
 end
 
 # | Read a .2dm (SMS Aquaveo) mesh-file and construct a 'IndexedFaceSet'
-function read2dm(con::IOStream) # :: SmsMesh
+function read2dm(con::IO) # :: SmsMesh
     nsstr = ""
     nds = VertexMap()
     fcs = IndexedFaceMap()
@@ -77,7 +77,7 @@ read2dm(file::String) = open(read2dm,file)
 export read2dm
 
 ## * Writers
-# | Write 'IndexedFaceSet' to an IOStream
+# | Write 'IndexedFaceSet' to an IO
 function write2dm(m::SmsMesh, con::IO)
     function renderVertex(i::Int,v::Vertex) # :: String
         "ND $i $(v.e1) $(v.e2) $(v.e3)\n"
@@ -138,8 +138,8 @@ function exportToStl(m::FaceSet)
     join([header, fs, footer], "\n")
 end
 
-# | Write an 'FaceSet' as Stl to 'IOStream'
-function exportToStl(m::FaceSet, con::IOStream)
+# | Write an 'FaceSet' as Stl to 'IO'
+function exportToStl(m::FaceSet, con::IO)
     write(con, exportToStl(m))
 end
 

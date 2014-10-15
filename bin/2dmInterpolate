@@ -6,7 +6,14 @@ if (ARGS[1] in ["-h", "--help"]) || length(ARGS) == 0
     exit()
 end
 
+if length(ARGS) == 1
+    src = STDIN
+    hgt = ARGS[1]
+elseif length(ARGS) == 2
+    (src,hgt) = ARGS
+end
+
 using SurfaceMesh
-ms = map(read2dm, ARGS)
+ms = map(read2dm, [src,hgt])
 m = SmsMesh(interpolateZ(ms[1].msh, ms[2].msh), ms[1].frs, ms[1].bcNds)
 write2dm(m)
