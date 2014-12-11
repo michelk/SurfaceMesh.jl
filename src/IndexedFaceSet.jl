@@ -23,14 +23,14 @@ end
 
 # | Difference between two meshes as new mesh ; currently they could
 #   only differ in vertex-z values
-# 
+#
 #   TODO : Implement difference between arbitrary surfaces
 function diff(m1::IndexedFaceSet,m2::IndexedFaceSet)
     vertices = VertexMap()
     for i = keys(m1.vs)
         v1 = m1.vs[i]
         v2 = m2.vs[i]
-        merge!(vertices,[i => Vertex(v1.e1, v1.e2, v2.e3 - v1.e3)])
+        merge!(vertices,Dict(i => Vertex(v1.e1, v1.e2, v2.e3 - v1.e3)))
     end
     IndexedFaceSet(vertices, m1.fcs)
 end
